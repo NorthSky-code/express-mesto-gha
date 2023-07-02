@@ -20,6 +20,9 @@ const cardsRouter = require('./routes/cards');
 app.use(bodyParser.json());
 app.use('/users', usersRouter);
 app.use('/cards', cardsRouter);
+app.use((req, res) => {
+  res.status(404).send('404 Not Found');
+});
 
 app.listen(PORT, () => {
   console.log('Сервер Запущен!');

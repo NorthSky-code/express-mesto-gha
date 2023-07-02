@@ -32,7 +32,7 @@ const deleteCard = (req, res) => {
     .then((card) => { res.send(card); })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(ERROR_NOT_FOUND).send({ message: 'Карточка с указанным _id не найдена.' });
+        res.status(ERROR_CODE).send({ message: 'Карточка с указанным _id не найдена.' });
       } else {
         res.status(ERROR_DEFAULT).send({ message: 'На сервере произошла ошибка.' });
       }

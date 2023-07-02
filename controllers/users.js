@@ -30,7 +30,7 @@ const getUserId = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(ERROR_NOT_FOUND).send({ message: 'Некорректный _id пользователя.' });
+        res.status(ERROR_CODE).send({ message: 'Некорректный _id пользователя.' });
       } else {
         res.status(ERROR_DEFAULT).send({ message: 'На сервере произошла ошибка.' });
       }
