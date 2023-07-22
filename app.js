@@ -8,6 +8,7 @@ const { errors } = require('celebrate');
 const { createUser, login } = require('./controllers/users');
 const { validateUserInfo, validateUserAuth } = require('./middlewares/validators');
 const auth = require('./middlewares/auth');
+const NotFoundError = require('./errors/not-found-err');
 
 const app = express();
 
@@ -20,6 +21,9 @@ app.use('/users', auth, usersRouter);
 app.use('/cards', auth, cardsRouter);
 app.post('/signup', validateUserInfo, createUser);
 app.post('/signin', validateUserAuth, login);
+app.use('*', (req, res, next) => {
+  next(new NotFoundError('Нет такой страницы'));
+});
 app.use(errors());
 
 app.use((err, req, res, next) => {
