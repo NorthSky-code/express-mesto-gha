@@ -20,8 +20,13 @@ const createUser = (req, res, next) => {
           throw new Conflict('Пользователь с таким Email уже зарегистрирован');
         }
         return User.create({ name, about, avatar, email, password: hash })
-          .then(() => {
-            res.status(201).send({ message: `Пользователь зарегистрирован` });
+          .then((data) => {
+            res.status(201).send({
+              email: data.email,
+              name: data.name,
+              about: data.about,
+              avatar: data.avatar,
+            });
           })
           .catch((err) => {
             if (err.name === 'ValidationError') {
