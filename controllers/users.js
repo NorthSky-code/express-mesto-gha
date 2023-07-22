@@ -11,15 +11,15 @@ const JWT_SECRET = 'secret-code';
 const createUser = (req, res, next) => {
   const { name, about, avatar, email, password } = req.body;
   if (!email || !password) {
-    return next(new BadRequest('Поля email или пароль не могут быть пустыми'));
+    next(new BadRequest('Поля email или пароль не могут быть пустыми'));
   }
-  return bcrypt.hash(password, 10, (error, hash) => {
-    return User.findOne({ email })
+  bcrypt.hash(password, 10, (error, hash) => {
+    User.findOne({ email })
       .then((user) => {
         if (user) {
           throw new Conflict('Пользователь с таким Email уже зарегистрирован');
         }
-        return User.create({ name, about, avatar, email, password: hash })
+        User.create({ name, about, avatar, email, password: hash })
           .then((data) => {
             res.status(201).send({
               email: data.email,
@@ -49,16 +49,16 @@ const createUser = (req, res, next) => {
 const login = (req, res, next) => {
   const { email, password } = req.body;
   if (!email || !password) {
-    return next(new BadRequest('Поля email или пароль не могут быть пустыми'));
+    next(new BadRequest('Поля email или пароль не могут быть пустыми'));
   }
   return User.findOne({ email }).select('+password')
     .then((user) => {
       if (!user || !user.password) {
-        return next(new NotAuth('Неправильные почта или пароль'));
+        next(new NotAuth('Неправильные почта или пароль'));
       }
-      return bcrypt.compare(password, user.password, (error, isValidPassword) => {
+      bcrypt.compare(password, user.password, (error, isValidPassword) => {
         if (!isValidPassword) {
-          return next(new NotAuth('Неправильные почта или пароль'));
+          next(new NotAuth('Неправильные почта или пароль'));
         }
         const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '7d' });
         res.cookie('jwt', token, { httpOnly: true }).send({ token });
@@ -73,14 +73,14 @@ const getUserId = (req, res, next) => {
   User.findById(id)
     .then((user) => {
       if (!user) {
-        return next(new NotFound('Пользователь с указанным _id не найден.'));
+        next(new NotFound('Пользователь с указанным _id не найден.'));
       } else {
         res.send(user);
       }
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return next(new BadRequest('Некорректный _id пользователя.'));
+        next(new BadRequest('Некорректный _id пользователя.'));
       } else {
         next(err);
       }
@@ -97,14 +97,14 @@ const getAuthUser = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
       if (!user) {
-        return next(new NotFound('Пользователь с указанным _id не найден.'));
+        next(new NotFound('Пользователь с указанным _id не найден.'));
       } else {
         res.send(user);
       }
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return next(new BadRequest('Некорректный _id пользователя.'));
+        next(new BadRequest('Некорректный _id пользователя.'));
       } else {
         next(err);
       }
@@ -121,13 +121,13 @@ const updateUser = (req, res, next) => {
   })
     .then((user) => {
       if (!user) {
-        return next(new NotFound('Пользователь с указанным _id не найден.'));
+        next(new NotFound('Пользователь с указанным _id не найден.'));
       }
       res.send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return next(new BadRequest('Переданы некорректные данные.'));
+        next(new BadRequest('Переданы некорректные данные.'));
       } else {
         next(err);
       }
@@ -144,14 +144,14 @@ const updateAvatar = (req, res, next) => {
   })
     .then((user) => {
       if (!user) {
-        return next(new NotFound('Пользователь с указанным _id не найден.'));
+        next(new NotFound('Пользователь с указанным _id не найден.'));
       } else {
         res.send(user);
       }
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return next(new BadRequest('Переданы некорректные данные.'));
+        next(new BadRequest('Переданы некорректные данные.'));
       } else {
         next(err);
       }

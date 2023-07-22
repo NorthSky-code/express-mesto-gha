@@ -12,7 +12,7 @@ const createCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return next(new BadRequest('Переданы некорректные данные'));
+        next(new BadRequest('Переданы некорректные данные'));
       } else {
         next(err);
       }
@@ -33,17 +33,17 @@ const deleteCard = (req, res, next) => {
   Card.findByIdAndRemove(id)
     .then((card) => {
       if (!card) {
-        return next(new NotFound('Карточка с указанным id не найдена.'));
+        next(new NotFound('Карточка с указанным id не найдена.'));
       }
       if (!card.owner.equals(req.user._id)) {
-        return next(new Forbidden('Нет прав на удаление чужой карточки'));
+        next(new Forbidden('Нет прав на удаление чужой карточки'));
       } else {
         res.send({ message: 'Карточка усешно удалена' });
       }
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return next(new BadRequest('Некорректный id карточки'));
+        next(new BadRequest('Некорректный id карточки'));
       } else {
         next(err);
       }
