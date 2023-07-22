@@ -11,6 +11,7 @@
     ],
     "no-console": "off",
     "no-unused-vars": "warn",
+    "no-extraneous-dependencies": "on",
     "quotes": "warn",
     "indent": "warn",
     "comma-dangle": "warn",
