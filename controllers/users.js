@@ -14,36 +14,26 @@ const createUser = (req, res, next) => {
     return next(new BadRequest('Поля email или пароль не могут быть пустыми'));
   }
   return bcrypt.hash(password, 10, (error, hash) => {
-    return User.findOne({ email })
-      .then((user) => {
-        if (user) {
-          throw new Conflict('Пользователь с таким Email уже зарегистрирован');
-        }
-        return User.create({ name, about, avatar, email, password: hash })
-          .then((data) => {
-            res.status(201).send({
-              email: data.email,
-              name: data.name,
-              about: data.about,
-              avatar: data.avatar,
-            });
-          })
-          .catch((err) => {
-            if (err.name === 'ValidationError') {
-              next(new BadRequest(err.message));
-            } else {
-              next(err);
-            }
-          });
+    return User.create({ name, about, avatar, email, password: hash })
+      .then((data) => {
+        res.status(201).send({
+          email: data.email,
+          name: data.name,
+          about: data.about,
+          avatar: data.avatar,
+        });
       })
       .catch((err) => {
+        if (err.name === 'ValidationError') {
+          return next(new BadRequest(err.message));
+        }
         if (err.code === 11000) {
           next(new Conflict('Пользователь с таким Email уже зарегистрирован'));
         } else {
           next(err);
         }
       });
-  });
+  })
 };
 
 const login = (req, res, next) => {
@@ -121,7 +111,7 @@ const updateUser = (req, res, next) => {
   })
     .then((user) => {
       if (!user) {
-        next(new NotFound('Пользователь с указанным _id не найден.'));
+        return next(new NotFound('Пользователь с указанным _id не найден.'));
       }
       res.send(user);
     })
