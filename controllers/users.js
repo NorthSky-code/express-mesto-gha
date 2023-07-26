@@ -51,7 +51,7 @@ const login = (req, res, next) => {
           return next(new NotAuth('Неправильные почта или пароль'));
         }
         const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '7d' });
-        res.cookie('jwt', token, { httpOnly: true }).send({ token });
+        res.send({ token });
       })
     })
     .catch(next);

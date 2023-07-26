@@ -3,13 +3,14 @@ const NotAuth = require('../errors/not-auth');
 const { JWT_SECRET } = require('../controllers/users')
 
 const auth = (req, res, next) => {
-  const token = req.cookies.jwt;
+  const { authorization } = req.headers;
 
-  if (!token) {
+  if (!authorization || !authorization.startsWith('Bearer ')) {
     next(new NotAuth('Необходима авторизация'));
     return;
   }
 
+  const token = authorization.replace('Bearer ', '');
   let payload;
 
   try {
